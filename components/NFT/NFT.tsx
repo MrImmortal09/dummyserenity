@@ -37,6 +37,9 @@ export default function NFTComponent({ nft }: Props) {
       tokenId: nft.metadata.id,
     });
 
+
+ // 3. update all the listings after buying 
+
   return (
     <>
       <ThirdwebNftMedia metadata={nft.metadata} className={styles.nftImage} />
