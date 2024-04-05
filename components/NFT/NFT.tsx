@@ -1,11 +1,12 @@
 import {
   ThirdwebNftMedia,
+  useAddress,
   useContract,
   useValidDirectListings,
   useValidEnglishAuctions,
 } from "@thirdweb-dev/react";
 import { NFT } from "@thirdweb-dev/sdk";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   MARKETPLACE_ADDRESS,
   NFT_COLLECTION_ADDRESS,
@@ -22,7 +23,6 @@ export default function NFTComponent({ nft }: Props) {
     MARKETPLACE_ADDRESS,
     "marketplace-v3"
   );
-
   // 1. Load if the NFT is for direct listing
   const { data: directListing, isLoading: loadingDirect } =
     useValidDirectListings(marketplace, {
@@ -37,9 +37,7 @@ export default function NFTComponent({ nft }: Props) {
       tokenId: nft.metadata.id,
     });
 
-
- // 3. update all the listings after buying 
-
+    
   return (
     <>
       <ThirdwebNftMedia metadata={nft.metadata} className={styles.nftImage} />

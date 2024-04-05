@@ -138,9 +138,15 @@ export default function SaleInfo({ nft }: Props) {
       startTimestamp: new Date(data.startDate),
       endTimestamp: new Date(data.endDate),
     });
+    // console.log("updating");
+    // updateListings(data)
+    // console.log("done");
 
     return txResult;
   }
+
+ 
+
 
   return (
     <>

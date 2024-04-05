@@ -1,8 +1,11 @@
 import {
   MediaRenderer,
   ThirdwebNftMedia,
+  useAddress,
   useContract,
   useContractEvents,
+  useContractMetadataUpdate,
+  useCreateDirectListing,
   useValidDirectListings,
   useValidEnglishAuctions,
   Web3Button,
@@ -23,6 +26,7 @@ import randomColor from "../../../util/randomColor";
 import Skeleton from "../../../components/Skeleton/Skeleton";
 import toast, { Toaster } from "react-hot-toast";
 import toastStyle from "../../../util/toastConfig";
+import { Sepolia } from "@thirdweb-dev/chains";
 
 type Props = {
   nft: NFT;
@@ -33,7 +37,7 @@ const [randomColor1, randomColor2] = [randomColor(), randomColor()];
 
 export default function TokenPage({ nft, contractMetadata }: Props) {
   const [bidValue, setBidValue] = useState<string>();
-
+  const contractAdress = useAddress();
   // Connect to marketplace smart contract
   const { contract: marketplace, isLoading: loadingContract } = useContract(
     MARKETPLACE_ADDRESS,
@@ -108,11 +112,49 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
         directListing[0].id,
         1
       );
+      console.log(directListing[0]);
+      // updateListings(directListing[0])
+      // updateContractMetadata({ name: "New name", description: directListing[0].pricePerToken})
+
+      
     } else {
       throw new Error("No valid listing found for this NFT");
     }
     return txResult;
   }
+
+   
+  // // 3. update all the listings after buying 
+  // const updateListings = async (data) => {
+  //   // Data of the listing you want to update
+
+  //   const listingId = 9; // ID of the listing you want to update
+  //   console.log("listed");
+  //   const listing = {
+  //     // address of the contract the asset you want to list is on
+  //     assetContractAddress: data.assetContractAddress, // should be same as original listing
+  //     // token ID of the asset you want to list
+  //     tokenId: 1, // should be same as original listing
+  //     // how many of the asset you want to list
+  //     quantity: 1,
+  //     // address of the currency contract that will be used to pay for the listing
+  //     currencyContractAddress: contractAdress, //NATIVE_TOKEN_ADDRESS,
+  //     // The price to pay per unit of NFTs listed.
+  //     pricePerToken: data.pricePerToken,
+  //     // when should the listing open up for offers
+  //     startTimestamp: new Date(Date.now()), // can't change this if listing already active
+  //     // how long the listing will be open for
+  //     endTimestamp: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+  //     // Whether the listing is reserved for a specific set of buyers.
+  //     isReservedListing: false
+  //   }
+  //   console.log("listed2");
+
+  //   // createDirectListing(listing);
+  //   console.log("createListing")
+  // }
+
+
 
   return (
     <>
@@ -403,3 +445,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
     fallback: "blocking", // can also be true or 'blocking'
   };
 };
+
+
+

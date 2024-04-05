@@ -13,6 +13,19 @@ export const MARKETPLACE_ADDRESS = "0x2F1aE405DbA52510E657878D78Dc5Fb9239395D6";
 export const NFT_COLLECTION_ADDRESS =
   "0x8e11eC4f93F0339a804922eabE933257C0e1c761";
 
+export const TESLA_COLLECTION_ADDRESS =  "0xb17a70a037e3EBa5962Cf57b8aE7fc1e1Ea1d6a2";
 // (Optional) Set up the URL of where users can view transactions on
 // For example, below, we use Mumbai.polygonscan to view transactions on the Mumbai testnet.
 export const ETHERSCAN_URL = "https://sepolia.etherscan.io/";
+
+
+export const NFT_COLLECTION_ADDRESSS = [
+  {
+      name: "Mercedes",
+      address: "0x2f7a904E7b3915547D4a83BCF2Ef5011AaFb3400",
+  },
+  {
+      name: "Tesla",
+      address: "0xb17a70a037e3EBa5962Cf57b8aE7fc1e1Ea1d6a2",
+  }
+]
