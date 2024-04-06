@@ -71,11 +71,11 @@ export default function TokenPage({ nft, contractMetadata }) {
     }
     // metadata of stock
     
-    // useEffect(()=>{
-    //   if(!loading){
-    //     console.log(data)
-    //   }
-    // },[loading])
+    useEffect(()=>{
+      if(!loading){
+        console.log(data)
+      }
+    },[data])
     
     return (
     <>
@@ -85,9 +85,13 @@ export default function TokenPage({ nft, contractMetadata }) {
       <Container maxWidth="lg">
         {metadata && <ThirdwebNftMedia metadata={metadata} height={100}
                         width={100}/>}
+                        <h1>{metadata?.name}</h1>
+                        {/* <p>{metadata?.description}</p> */}
         <div>Start Time  --- {data?.startTime.toDateString()}</div>
         <div>Price ------- {data?.currencyMetadata.displayValue}</div>
-        <div>Stocks Left ---- {data?.currentMintSupply}</div>      
+        <div>Stocks Left ---- {data?.availableSupply}</div>    
+        <div>limit -----------{data?.maxClaimablePerWallet}</div>
+        <div>issue size -- {Number(data?.maxClaimableSupply) * Number(data?.currencyMetadata.displayValue)}</div> 
       <Web3Button
       contractAddress={CompanyCollectionAddress}
       action={() =>
