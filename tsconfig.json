@@ -15,6 +15,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/ipo/[companyCollectionAddress]/[companyId].jsx", "pages/ipo.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/ipo/[companyCollectionAddress]/[companyId].jsx", "pages/ipo.jsx", "pages/token/[contractAddress]/[tokenId].tsx"],
   "exclude": ["node_modules"]
 }

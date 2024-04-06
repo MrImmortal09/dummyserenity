@@ -1,24 +1,21 @@
 import {
   MediaRenderer,
   ThirdwebNftMedia,
-  useAddress,
   useContract,
   useContractEvents,
-  useContractMetadataUpdate,
-  useCreateDirectListing,
   useValidDirectListings,
   useValidEnglishAuctions,
   Web3Button,
 } from "@thirdweb-dev/react";
 import React, { useState } from "react";
 import Container from "../../../components/Container/Container";
-import { GetStaticProps, GetStaticPaths } from "next";
+
 import { NFT, ThirdwebSDK } from "@thirdweb-dev/sdk";
 import {
   ETHERSCAN_URL,
   MARKETPLACE_ADDRESS,
   NETWORK,
-  NFT_COLLECTION_ADDRESS,
+  NFT_COLLECTION_ADDRESSS,
 } from "../../../const/contractAddresses";
 import styles from "../../../styles/Token.module.css";
 import Link from "next/link";
@@ -26,18 +23,22 @@ import randomColor from "../../../util/randomColor";
 import Skeleton from "../../../components/Skeleton/Skeleton";
 import toast, { Toaster } from "react-hot-toast";
 import toastStyle from "../../../util/toastConfig";
-import { Sepolia } from "@thirdweb-dev/chains";
+import { useRouter } from "next/router";
 
-type Props = {
-  nft: NFT;
-  contractMetadata: any;
-};
+
 
 const [randomColor1, randomColor2] = [randomColor(), randomColor()];
 
-export default function TokenPage({ nft, contractMetadata }: Props) {
+export default function TokenPage() {
   const [bidValue, setBidValue] = useState<string>();
-  const contractAdress = useAddress();
+  const router = useRouter();
+  const { contractAddress , tokenId} = router.query
+  const { contract: marketplace, isLoading: loadingContract } = useContract(
+    MARKETPLACE_ADDRESS,
+    "marketplace-v3"
+  );
+  
+const listing = await contract.directListings.getListing(tokenId);
   // Connect to marketplace smart contract
   const { contract: marketplace, isLoading: loadingContract } = useContract(
     MARKETPLACE_ADDRESS,
@@ -45,18 +46,18 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
   );
 
   // Connect to NFT Collection smart contract
-  const { contract: nftCollection } = useContract(NFT_COLLECTION_ADDRESS);
+  const { contract: nftCollection } = useContract(contractAddress);
 
   const { data: directListing, isLoading: loadingDirect } =
     useValidDirectListings(marketplace, {
-      tokenContract: NFT_COLLECTION_ADDRESS,
-      tokenId: nft.metadata.id,
+      tokenContract: contractAddress,
+      tokenId: id,
     });
 
   // 2. Load if the NFT is for auction
   const { data: auctionListing, isLoading: loadingAuction } =
     useValidEnglishAuctions(marketplace, {
-      tokenContract: NFT_COLLECTION_ADDRESS,
+      tokenContract: contractAddress,
       tokenId: nft.metadata.id,
     });
 
@@ -89,7 +90,7 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
       );
     } else if (directListing?.[0]) {
       txResult = await marketplace?.offers.makeOffer({
-        assetContractAddress: NFT_COLLECTION_ADDRESS,
+        assetContractAddress: contractAddress,
         tokenId: nft.metadata.id,
         totalPrice: bidValue,
       });
@@ -112,49 +113,11 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
         directListing[0].id,
         1
       );
-      console.log(directListing[0]);
-      // updateListings(directListing[0])
-      // updateContractMetadata({ name: "New name", description: directListing[0].pricePerToken})
-
-      
     } else {
       throw new Error("No valid listing found for this NFT");
     }
     return txResult;
   }
-
-   
-  // // 3. update all the listings after buying 
-  // const updateListings = async (data) => {
-  //   // Data of the listing you want to update
-
-  //   const listingId = 9; // ID of the listing you want to update
-  //   console.log("listed");
-  //   const listing = {
-  //     // address of the contract the asset you want to list is on
-  //     assetContractAddress: data.assetContractAddress, // should be same as original listing
-  //     // token ID of the asset you want to list
-  //     tokenId: 1, // should be same as original listing
-  //     // how many of the asset you want to list
-  //     quantity: 1,
-  //     // address of the currency contract that will be used to pay for the listing
-  //     currencyContractAddress: contractAdress, //NATIVE_TOKEN_ADDRESS,
-  //     // The price to pay per unit of NFTs listed.
-  //     pricePerToken: data.pricePerToken,
-  //     // when should the listing open up for offers
-  //     startTimestamp: new Date(Date.now()), // can't change this if listing already active
-  //     // how long the listing will be open for
-  //     endTimestamp: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-  //     // Whether the listing is reserved for a specific set of buyers.
-  //     isReservedListing: false
-  //   }
-  //   console.log("listed2");
-
-  //   // createDirectListing(listing);
-  //   console.log("createListing")
-  // }
-
-
 
   return (
     <>
@@ -396,55 +359,53 @@ export default function TokenPage({ nft, contractMetadata }: Props) {
   );
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
-  const tokenId = context.params?.tokenId as string;
+// export const getStaticProps: GetStaticProps = async (context) => {
+//   const tokenId = context.params?.tokenId as string;
 
-  const sdk = new ThirdwebSDK(NETWORK, {
-    secretKey: process.env.TW_SECRET_KEY,
-  });
+//   const sdk = new ThirdwebSDK(NETWORK, {
+//     secretKey: process.env.TW_SECRET_KEY,
+//   });
 
-  const contract = await sdk.getContract(NFT_COLLECTION_ADDRESS);
+//   const contract = await sdk.getContract(NFT_COLLECTION_ADDRESSS);
 
-  const nft = await contract.erc721.get(tokenId);
+//   const nft = await contract.erc721.get(tokenId);
 
-  let contractMetadata;
+//   let contractMetadata;
 
-  try {
-    contractMetadata = await contract.metadata.get();
-  } catch (e) {}
+//   try {
+//     contractMetadata = await contract.metadata.get();
+//   } catch (e) {}
 
-  return {
-    props: {
-      nft,
-      contractMetadata: contractMetadata || null,
-    },
-    revalidate: 1, // https://nextjs.org/docs/basic-features/data-fetching/incremental-static-regeneration
-  };
-};
+//   return {
+//     props: {
+//       nft,
+//       contractMetadata: contractMetadata || null,
+//     },
+//     revalidate: 1, // https://nextjs.org/docs/basic-features/data-fetching/incremental-static-regeneration
+//   };
+// };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const sdk = new ThirdwebSDK(NETWORK, {
-    secretKey: process.env.TW_SECRET_KEY,
-  });
+// export const getStaticPaths: GetStaticPaths = async (context) => {
+//   const {contractAddress} = context
+//   const sdk = new ThirdwebSDK(NETWORK, {
+//     secretKey: process.env.TW_SECRET_KEY,
+//   });
 
-  const contract = await sdk.getContract(NFT_COLLECTION_ADDRESS);
+//   const contract = await sdk.getContract(contractAddress as string);
 
-  const nfts = await contract.erc721.getAll();
+//   const nfts = await contract.erc721.getAll();
 
-  const paths = nfts.map((nft) => {
-    return {
-      params: {
-        contractAddress: NFT_COLLECTION_ADDRESS,
-        tokenId: nft.metadata.id,
-      },
-    };
-  });
+//   const paths = nfts.map((nft) => {
+//     return {
+//       params: {
+//         contractAddress: contractAddress,
+//         tokenId: nft.metadata.id,
+//       },
+//     };
+//   });
 
-  return {
-    paths,
-    fallback: "blocking", // can also be true or 'blocking'
-  };
-};
-
-
-
+//   return {
+//     paths,
+//     fallback: "blocking", // can also be true or 'blocking'
+//   };
+// };
